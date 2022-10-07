@@ -127,6 +127,9 @@ func elementByName(name string, src interface{}) (interface{}, error) {
 		srcVal = reflect.ValueOf(src)
 	}
 
+	if peg, ok := src.(PyElemGetter); ok {
+		return peg.PyElemGet(name)
+	}
 	switch srcVal.Kind() {
 	case reflect.Ptr:
 		if srcVal.IsNil() {

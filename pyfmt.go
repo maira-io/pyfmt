@@ -79,6 +79,7 @@ func (b *buffer) WriteAlignedString(s string, align int, width int64, fillChar r
 
 // What type of numbering is being used to access fields. {} is automatic, {0} is manual.
 type numbering int
+
 const (
 	unknown numbering = iota
 	automatic
@@ -92,7 +93,7 @@ type ff struct {
 	// args is the list of arguments passed to Fmt.
 	args    []interface{}
 	listPos int
-	numb numbering
+	numb    numbering
 
 	// render renders format parameters
 	r render
@@ -212,7 +213,8 @@ func (f *ff) getArg(argName string) (interface{}, error) {
 		if argName != "" && f.numb == automatic {
 			return nil, Error("cannot switch from automatic field numbering to manual field specification")
 		}
-	} 
+	}
+
 	val, err := getElement(argName, f.listPos, f.args...)
 	if argName == "" {
 		f.listPos++
@@ -258,4 +260,12 @@ func Error(format string, a ...interface{}) error {
 // of the type based on that.
 type PyFormatter interface {
 	PyFormat(f string) (string, error)
+}
+
+// PyElemGetter is an interface implemented with a PyElemGet method that allows for a custom
+// getter.
+// PyElemGet method allows to implement custom indexing (by 'name') into underlying object.
+// One use case is to get unexported members via access methods.
+type PyElemGetter interface {
+	PyElemGet(name string) (interface{}, error)
 }
